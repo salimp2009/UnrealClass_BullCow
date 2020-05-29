@@ -11,7 +11,8 @@ void UBullCowCartridge::BeginPlay() // When the game starts
     // Prompt for Guess
     PrintLine(TEXT("Guess the 5 letter hidden word"));
     PrintLine(TEXT("Press enter to continue.."));
- 
+    
+    
     SetupGame();
     
 }
@@ -22,6 +23,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
    ClearScreen();
   // FString HiddenWord{TEXT("zapxcslm")};            // variable start capital letters; refactor to make a class variable
    PrintLine(Input);
+   int32 length= HiddenWord.Len();
    
   // auto CheckInput= Input.Equals(HiddenWord, ESearchCase::CaseSensitive);
   // if (CheckInput)
