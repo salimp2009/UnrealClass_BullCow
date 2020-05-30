@@ -24,6 +24,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
   // FString HiddenWord{TEXT("zapxcslm")};            // variable start capital letters; refactor to make a class variable
    PrintLine(Input);
    int32 length= HiddenWord.Len();
+  
    
   // auto CheckInput= Input.Equals(HiddenWord, ESearchCase::CaseSensitive);
   // if (CheckInput)
@@ -32,10 +33,18 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
        PrintLine(TEXT("Sorry No More Lives...Try Again.."));
        return;
    }
-   if (Input == HiddenWord && Lives != 0)  
+   if (Input == HiddenWord)  
    {
        PrintLine(TEXT("You win..."));
    }  
+   else if(Input.Len()!=HiddenWord.Len())
+   {
+       --Lives;
+       //PrintLine(TEXT("The HiddenWord is 6 characters long..Try Again.."));
+       PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len() ));
+       //PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());
+
+   }
    else if (Input == L"") 
    {
        PrintLine(TEXT("Invalid Entry...Try Again..."));
