@@ -4,33 +4,31 @@
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
-   
+    SetupGame();
+    PrintLine(TEXT("Hidden Word is: %s and %i charachters long"), *HiddenWord, HiddenWord.Len());  
+
     // welcome message
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
 
     // Prompt for Guess
     PrintLine(TEXT("Guess the 5 letter hidden word"));
     PrintLine(TEXT("Press enter to continue.."));
-    
-    
-    SetupGame();
-    
+ 
 }
 
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
    ClearScreen();
-  // FString HiddenWord{TEXT("zapxcslm")};            // variable start capital letters; refactor to make a class variable
    PrintLine(Input);
-   int32 length= HiddenWord.Len();
-  
-   
+  // int32 length= HiddenWord.Len();
   // auto CheckInput= Input.Equals(HiddenWord, ESearchCase::CaseSensitive);
-  // if (CheckInput)
+  
    if (Lives == 0)
    {
        PrintLine(TEXT("Sorry No More Lives...Try Again.."));
+       PrintLine(TEXT("The Hidden word was %s and %i charachters long"), *HiddenWord, HiddenWord.Len());
+       //PrintLine(FString::Printf(TEXT("The Hidden word was %s"), *HiddenWord));  // Unreal original method passing values into Strings 
        return;
    }
    if (Input == HiddenWord)  
@@ -40,19 +38,13 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
    else if(Input.Len()!=HiddenWord.Len())
    {
        --Lives;
-       //PrintLine(TEXT("The HiddenWord is 6 characters long..Try Again.."));
        PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len() ));
        //PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());
-
-   }
-   else if (Input == L"") 
-   {
-       PrintLine(TEXT("Invalid Entry...Try Again..."));
-   }    
+   } 
    else 
    {
        --Lives;
-       PrintLine(TEXT("Sorry You Lost...Try Again.."));
+       PrintLine(TEXT("Sorry Wrong Guess...Try Again.."));
    } 
 
    // Pseu Code for Guess;
@@ -65,12 +57,6 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
    // if no; ShowHiddenWord()
    // AskPlayAgain(); ResetHidden(); ResetLives(); Guess()  || GameOver()
    // Replay()
-
-   FString name;
-   if (name.Len() == HiddenWord.Len())
-   {
-      
-   }
 }
 
 void UBullCowCartridge::SetupGame()
