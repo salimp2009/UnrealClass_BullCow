@@ -5,40 +5,36 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
     SetupGame();
-    PrintLine(TEXT("Hidden Word is: %s and %i charachters long"), *HiddenWord, HiddenWord.Len());  
+    PrintLine(TEXT("Hidden Word is: %s"), *HiddenWord);  
 
     // welcome message
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
-
-    // Prompt for Guess
-    PrintLine(TEXT("Guess the 5 letter hidden word"));
-    PrintLine(TEXT("Press enter to continue.."));
+    PrintLine(TEXT("Guess the %i letter hidden word"), HiddenWord.Len());
+    PrintLine(TEXT("Type your guess & press enter to continue"));
  
 }
-
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
    ClearScreen();
-   PrintLine(Input);
-  // int32 length= HiddenWord.Len();
-  // auto CheckInput= Input.Equals(HiddenWord, ESearchCase::CaseSensitive);
+   PrintLine(TEXT("Your guess is %s & it is %i long"),*Input, Input.Len());
   
    if (Lives == 0)
    {
-       PrintLine(TEXT("Sorry No More Lives...Try Again.."));
-       PrintLine(TEXT("The Hidden word was %s and %i charachters long"), *HiddenWord, HiddenWord.Len());
-       //PrintLine(FString::Printf(TEXT("The Hidden word was %s"), *HiddenWord));  // Unreal original method passing values into Strings 
+       PrintLine(TEXT("Sorry No More Lives...!\nPlease Try Again"));
+       PrintLine(TEXT("The Hidden word was %s"), *HiddenWord);
+       bGameOver = true;
        return;
    }
    if (Input == HiddenWord)  
    {
        PrintLine(TEXT("You win..."));
+       bGameOver = true;
    }  
    else if(Input.Len()!=HiddenWord.Len())
    {
        --Lives;
-       PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len() ));
+       PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long...\nTry Again.."), HiddenWord.Len() ));
        //PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());
    } 
    else 
@@ -63,6 +59,7 @@ void UBullCowCartridge::SetupGame()
 {
     HiddenWord = TEXT("unreal");
     Lives = 3;
+    bGameOver = false;
 }
 
  
