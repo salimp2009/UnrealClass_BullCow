@@ -5,44 +5,43 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
     SetupGame();
-    PrintLine(TEXT("Hidden Word is: %s"), *HiddenWord);  
-
-    // welcome message
-    PrintLine(TEXT("Welcome to BULLCOW GAME"));
-    PrintLine(TEXT("Guess the %i letter hidden word"), HiddenWord.Len());
-    PrintLine(TEXT("Type your guess & press enter to continue"));
- 
+    //PrintLine(TEXT("Hidden Word is: %s"), *HiddenWord);  
 }
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
-   ClearScreen();
-   PrintLine(TEXT("Your guess is %s & it is %i long"),*Input, Input.Len());
+    if (bGameOver)
+    {
+        ClearScreen();
+        SetupGame();
+    }
+    else
+    {
+        if (Lives == 0)
+        {
+            PrintLine(TEXT("Sorry No More Lives...!\nPlease Try Again"));
+            PrintLine(TEXT("The Hidden word was %s"), *HiddenWord);
+            EndGame();
+        }
+        else if (Input == HiddenWord)
+        {
+            PrintLine(TEXT("You win..."));
+            EndGame();
+        }
+        else if (Input.Len() != HiddenWord.Len())
+        {
+            --Lives;
+            PrintLine(TEXT("Your guess is %s & it is %i long"), *Input, Input.Len());
+            PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long...\nTry Again.."), HiddenWord.Len()));
+            // PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());                    // Alternative
+        }
+        else
+        {
+            --Lives;
+            PrintLine(TEXT("Sorry Wrong Guess...Try Again.."));
+        }
+    }
   
-   if (Lives == 0)
-   {
-       PrintLine(TEXT("Sorry No More Lives...!\nPlease Try Again"));
-       PrintLine(TEXT("The Hidden word was %s"), *HiddenWord);
-       bGameOver = true;
-       return;
-   }
-   if (Input == HiddenWord)  
-   {
-       PrintLine(TEXT("You win..."));
-       bGameOver = true;
-   }  
-   else if(Input.Len()!=HiddenWord.Len())
-   {
-       --Lives;
-       PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long...\nTry Again.."), HiddenWord.Len() ));
-       //PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());
-   } 
-   else 
-   {
-       --Lives;
-       PrintLine(TEXT("Sorry Wrong Guess...Try Again.."));
-   } 
-
    // Pseu Code for Guess;
    // IsValid() && IsCorrect
    // if true; WinMsg() && GameOver() || RePlay() (replay; resetlives(), Guess()
@@ -57,9 +56,21 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
 
 void UBullCowCartridge::SetupGame()
 {
+    // welcome message
+    PrintLine(TEXT("Welcome to BULLCOW GAME"));
     HiddenWord = TEXT("unreal");
     Lives = 3;
+
+    PrintLine(TEXT("Guess the %i letter hidden word"), HiddenWord.Len());
+    PrintLine(TEXT("Type your guess \nPress enter to continue..."));
+
     bGameOver = false;
+}
+
+void UBullCowCartridge::EndGame()
+{
+    bGameOver = true;
+    PrintLine(TEXT("Press Enter to play again:"));
 }
 
  
