@@ -57,7 +57,6 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
 void UBullCowCartridge::SetupGame()
 {
     // welcome message
-    // checking git lfs error due to attributes file
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
     HiddenWord = TEXT("unreal");
     Lives = 3;
