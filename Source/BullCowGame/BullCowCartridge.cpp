@@ -17,30 +17,10 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     }
     else
     {
-        if (Lives == 0)
-        {
-            PrintLine(TEXT("Sorry No More Lives...!\nPlease Try Again"));
-            PrintLine(TEXT("The Hidden word was %s"), *HiddenWord);
-            EndGame();
-        }
-        else if (Input == HiddenWord)
-        {
-            PrintLine(TEXT("You win..."));
-            EndGame();
-        }
-        else if (Input.Len() != HiddenWord.Len())
-        {
-            --Lives;
-            PrintLine(TEXT("Your guess is %s & it is %i long"), *Input, Input.Len());
-            PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long...\nTry Again.."), HiddenWord.Len()));
-            // PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());                    // Alternative
-        }
-        else
-        {
-            --Lives;
-            PrintLine(TEXT("Sorry Wrong Guess...Try Again.."));
-        }
-    }
+        ProcessGuess(Input);
+
+     }
+    
   
    // Pseu Code for Guess;
    // IsValid() && IsCorrect
@@ -59,9 +39,10 @@ void UBullCowCartridge::SetupGame()
     // welcome message
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
     HiddenWord = TEXT("unreal");
-    Lives = 3;
-
+    Lives = HiddenWord.Len();
+    
     PrintLine(TEXT("Guess the %i letter hidden word"), HiddenWord.Len());
+    PrintLine(TEXT("You have %i lives"), HiddenWord.Len());
     PrintLine(TEXT("Type your guess \nPress enter to continue..."));
 
     bGameOver = false;
@@ -71,6 +52,36 @@ void UBullCowCartridge::EndGame()
 {
     bGameOver = true;
     PrintLine(TEXT("Press Enter to play again:"));
+}
+
+void UBullCowCartridge::ProcessGuess(const FString& Input)
+{
+    if (Input == HiddenWord)
+    {
+        PrintLine(TEXT("You win..."));
+        EndGame();
+    }
+    else
+    {
+        //--Lives;
+        PrintLine(TEXT("Lost a life"));
+        PrintLine(TEXT("%i"), --Lives);
+        if (Lives > 0)
+        {
+            if (Input.Len() != HiddenWord.Len())
+            {
+                PrintLine(TEXT("Sorry try guessing again! \n You have %i lives"), Lives);
+                // PrintLine(FString::Printf(TEXT("The hidden word is %2d characters long...\nTry Again.."), HiddenWord.Len()));
+                // PrintLine(TEXT("The hidden word is %2d characters long..Try Again.."), HiddenWord.Len());                    // Alternative
+            }
+        }
+        else
+        {
+            PrintLine(TEXT("Sorry No More Lives"));
+            EndGame();
+        }
+    }
+
 }
 
  
