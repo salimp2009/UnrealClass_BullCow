@@ -1,11 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
+//#include "HiddenWordList.h"
+#include "Math/UnrealMathUtility.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+
 
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
+    const FString WordListhPath=FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
+    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);
+    FFileHelper::LoadFileToStringArrayWithPredicate(WordList, *WordListhPath, [this](const auto& word) {return IsIsogram(word); });
+    //WordList.RemoveAll([this](auto& word) {return !IsIsogram(word);});
     SetupGame();
-    //PrintLine(TEXT("Hidden Word is: %s"), *HiddenWord);  
+    PrintLine(TEXT("Hidden Word List has %i"), WordList.Num());  
 }
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
@@ -19,15 +28,8 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     {
         ProcessGuess(Input);
     }
-    
-   // Pseu Code for Guess;
-   // IsValid() && IsCorrect
+ 
    // if true; WinMsg() && GameOver() || RePlay() (replay; resetlives(), Guess()
-   // DeductLives()
-   // CheckLives()
-   // ShowLives()
-   // if(Lives()) ContinueGame() ; Gues()
-   // if no; ShowHiddenWord()
    // AskPlayAgain(); ResetHidden(); ResetLives(); Guess()  || GameOver()
    // Replay()
 }
@@ -37,7 +39,8 @@ void UBullCowCartridge::SetupGame()
     // welcome message
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
 
-    HiddenWord = TEXT("unreal");
+    //HiddenWord = TEXT("unreal");
+    HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
     Lives = HiddenWord.Len();
     bGameOver = false;
 
@@ -45,9 +48,9 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("You have %i lives"), HiddenWord.Len());
     PrintLine(TEXT("Type your guess \nPress enter to continue..."));
 
-    const TCHAR HW[] = TEXT("SALIM");
-    PrintLine(TEXT("the 1st character of the Hidden Word is %c"), HiddenWord[0]);
-    PrintLine(TEXT("the 3rd character of the HW is %c"), HW[2]);
+    //const TCHAR HW[] = TEXT("SALIM");
+    //PrintLine(TEXT("the 1st character of the Hidden Word is %c"), HiddenWord[0]);
+    //PrintLine(TEXT("the 3rd character of the HW is %c"), HW[2]);
 }
 
 void UBullCowCartridge::EndGame()
@@ -73,7 +76,7 @@ void UBullCowCartridge::ProcessGuess(const FString& Input)
         return;
     }
 
-    if (IsIsogram(Input))
+    if (!IsIsogram(Input))
     {
         PrintLine(TEXT("No repeating letters, guess again"));
         return;
@@ -95,23 +98,25 @@ void UBullCowCartridge::ProcessGuess(const FString& Input)
    PrintLine(TEXT("Try again, You have %i lives left"), Lives);
 }
 
-bool UBullCowCartridge::IsIsogram(const FString& Guess)
+bool UBullCowCartridge::IsIsogram(const FString& Guess) const
 {
-    //for (int i{0}; i < Guess.Len(); ++i)
+    //for (int32 Index{0}; Index < Guess.Len(); ++Index)
     //{
-    //    for (int j{i+1}; j < Guess.Len(); ++j)
+    //    for (int32 Comparision{Index+1}; Comparision < Guess.Len(); ++Comparision)
     //    {
-    //        if (Guess[i] == Guess[j]) 
-    //            return true;
+    //        if (Guess[Index] == Guess[Comparision])
+    //            return false;
     //    }
     //}
 
-    int32 pos{0};
-    for(int i=0; i<Guess.Len(); ++i) 
+    int32 Position{0};
+ 
+    for(int32 Index=0; Index<Guess.Len(); ++Index) 
     {
-        Guess.FindLastChar(Guess[i], pos);
-        if(pos != i) return true;
+        Guess.FindLastChar(Guess[Index], Position);
+        if(Position != Index) return false;
     }
-    return false;
+     
+    return true;
 }
  
