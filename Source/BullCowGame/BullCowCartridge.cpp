@@ -15,7 +15,7 @@ void UBullCowCartridge::BeginPlay() // When the game starts
     PrintLine(TEXT("Hidden Word List has %i"), WordList.Num()); 
 }
 
-void UBullCowCartridge::OnInput(FStringView Input) // When the player hits enter
+void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
     if (bGameOver)
     {
@@ -56,7 +56,7 @@ void UBullCowCartridge::EndGame()
     PrintLine(TEXT("Press Enter to play again:"));
 }
 
-void UBullCowCartridge::ProcessGuess(FStringView Input)
+void UBullCowCartridge::ProcessGuess(const FString& Input)
 {
     if (Input == HiddenWord)
     {
@@ -110,7 +110,7 @@ void UBullCowCartridge::GetValidWords(TArray<FString>& wordlist)
     //}   
 }
 
-bool UBullCowCartridge::IsIsogram(FStringView Guess) const
+bool UBullCowCartridge::IsIsogram(const FString& Guess) const
 {
     
     // Classic for nested for for-if loop
