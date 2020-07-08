@@ -6,18 +6,16 @@
 #include "Misc/Paths.h"
 
 
+
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
-    const FString WordListhPath=FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
-    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);
-    FFileHelper::LoadFileToStringArrayWithPredicate(WordList, *WordListhPath, [this](const auto& word) {return IsIsogram(word); });
-    //WordList.RemoveAll([this](auto& word) {return !IsIsogram(word);});
+    GetValidWords(WordList);
     SetupGame();
-    PrintLine(TEXT("Hidden Word List has %i"), WordList.Num());  
+    PrintLine(TEXT("Hidden Word List has %i"), WordList.Num()); 
 }
 
-void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
+void UBullCowCartridge::OnInput(FStringView Input) // When the player hits enter
 {
     if (bGameOver)
     {
@@ -29,7 +27,6 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
         ProcessGuess(Input);
     }
  
-   // if true; WinMsg() && GameOver() || RePlay() (replay; resetlives(), Guess()
    // AskPlayAgain(); ResetHidden(); ResetLives(); Guess()  || GameOver()
    // Replay()
 }
@@ -59,7 +56,7 @@ void UBullCowCartridge::EndGame()
     PrintLine(TEXT("Press Enter to play again:"));
 }
 
-void UBullCowCartridge::ProcessGuess(const FString& Input)
+void UBullCowCartridge::ProcessGuess(FStringView Input)
 {
     if (Input == HiddenWord)
     {
@@ -90,7 +87,6 @@ void UBullCowCartridge::ProcessGuess(const FString& Input)
        ClearScreen();
        PrintLine(TEXT("Sorry No More Lives"));
        PrintLine(TEXT("The HiddenWord was : %s \n"), *HiddenWord);
-
        EndGame(); 
        return;
    }
@@ -98,8 +94,27 @@ void UBullCowCartridge::ProcessGuess(const FString& Input)
    PrintLine(TEXT("Try again, You have %i lives left"), Lives);
 }
 
-bool UBullCowCartridge::IsIsogram(const FString& Guess) const
+void UBullCowCartridge::GetValidWords(TArray<FString>& wordlist)
 {
+    const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
+    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);
+    FFileHelper::LoadFileToStringArrayWithPredicate(wordlist, *WordListhPath, [this](const auto& word) {return IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4; });
+    
+    // Below option is not used any more since it causes longer compile times !!!!
+    
+    //WordList.RemoveAll([this](auto& word) {return !IsIsogram(word);});
+    //for (const auto& word : WordList2)
+    //{
+    //    if (IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4)
+    //        WordList.Emplace(word);
+    //}   
+}
+
+bool UBullCowCartridge::IsIsogram(FStringView Guess) const
+{
+    
+    // Classic for nested for for-if loop
+    
     //for (int32 Index{0}; Index < Guess.Len(); ++Index)
     //{
     //    for (int32 Comparision{Index+1}; Comparision < Guess.Len(); ++Comparision)
@@ -110,13 +125,12 @@ bool UBullCowCartridge::IsIsogram(const FString& Guess) const
     //}
 
     int32 Position{0};
- 
     for(int32 Index=0; Index<Guess.Len(); ++Index) 
     {
         Guess.FindLastChar(Guess[Index], Position);
         if(Position != Index) return false;
     }
-     
+
     return true;
 }
  
