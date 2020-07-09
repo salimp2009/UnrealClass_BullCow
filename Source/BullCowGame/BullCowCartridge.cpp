@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
 //#include "HiddenWordList.h"
-#include "Math/UnrealMathUtility.h"
+//#include "Math/UnrealMathUtility.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 
@@ -37,7 +37,8 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
 
     //HiddenWord = TEXT("unreal");
-    HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
+   // HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
+    HiddenWord = WordList[FMath::RandRange(4, WordList.Num())];
     Lives = HiddenWord.Len();
     bGameOver = false;
 
@@ -56,7 +57,7 @@ void UBullCowCartridge::EndGame()
     PrintLine(TEXT("Press Enter to play again:"));
 }
 
-void UBullCowCartridge::ProcessGuess(const FString& Input)
+void UBullCowCartridge::ProcessGuess(FStringView Input)
 {
     if (Input == HiddenWord)
     {
@@ -110,7 +111,7 @@ void UBullCowCartridge::GetValidWords(TArray<FString>& wordlist)
     //}   
 }
 
-bool UBullCowCartridge::IsIsogram(const FString& Guess) const
+bool UBullCowCartridge::IsIsogram(FStringView Guess) const
 {
     
     // Classic for nested for for-if loop
