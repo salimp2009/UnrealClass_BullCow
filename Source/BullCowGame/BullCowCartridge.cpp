@@ -10,12 +10,12 @@
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
-    GetValidWords(WordList);
+    GetValidWords();
     SetupGame();
     PrintLine(TEXT("Hidden Word List has %i"), WordList.Num()); 
 }
 
-void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
+void UBullCowCartridge::OnInput(FStringView Input) // When the player hits enter
 {
     if (bGameOver)
     {
@@ -26,9 +26,6 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     {
         ProcessGuess(Input);
     }
- 
-   // AskPlayAgain(); ResetHidden(); ResetLives(); Guess()  || GameOver()
-   // Replay()
 }
 
 void UBullCowCartridge::SetupGame()
@@ -36,9 +33,8 @@ void UBullCowCartridge::SetupGame()
     // welcome message
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
 
-    //HiddenWord = TEXT("unreal");
-   // HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
-    HiddenWord = WordList[FMath::RandRange(4, WordList.Num())];
+    HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
+    //HiddenWord = WordList[FMath::RandRange(4, WordList.Num()-1)];
     Lives = HiddenWord.Len();
     bGameOver = false;
 
@@ -95,20 +91,22 @@ void UBullCowCartridge::ProcessGuess(FStringView Input)
    PrintLine(TEXT("Try again, You have %i lives left"), Lives);
 }
 
-void UBullCowCartridge::GetValidWords(TArray<FString>& wordlist)
+void UBullCowCartridge::GetValidWords()
 {
     const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
     //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);
-    FFileHelper::LoadFileToStringArrayWithPredicate(wordlist, *WordListhPath, [this](const auto& word) {return IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4; });
+    auto result=FFileHelper::LoadFileToStringArrayWithPredicate(WordList, *WordListhPath, [this](const auto& word) {return IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4; });
+    
+    // Error message if the file is not loaded
+    if(!result) UE_LOG(LogTemp, Warning, TEXT("File Not Found %s"), *WordListhPath);
     
     // Below option is not used any more since it causes longer compile times !!!!
-    
     //WordList.RemoveAll([this](auto& word) {return !IsIsogram(word);});
     //for (const auto& word : WordList2)
     //{
     //    if (IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4)
     //        WordList.Emplace(word);
-    //}   
+    //}  
 }
 
 bool UBullCowCartridge::IsIsogram(FStringView Guess) const
