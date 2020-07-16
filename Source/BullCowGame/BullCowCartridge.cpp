@@ -21,6 +21,7 @@ void UBullCowCartridge::OnInput(FStringView Input) // When the player hits enter
     {
         ClearScreen();
         SetupGame();
+     
     }
     else
     {
@@ -34,6 +35,7 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("Welcome to BULLCOW GAME"));
 
     HiddenWord = WordList[FMath::RandHelper(WordList.Num())];
+    UE_LOG(LogTemp, Warning, TEXT("HiddenWord= %s"), *HiddenWord);
     //HiddenWord = WordList[FMath::RandRange(4, WordList.Num()-1)];
     Lives = HiddenWord.Len();
     bGameOver = false;
@@ -88,13 +90,21 @@ void UBullCowCartridge::ProcessGuess(FStringView Input)
        return;
    }
 
+   FBullCowCount Count;
+   GetBullCows(Input, Count);
+   //auto& [bull, count] = Count;          // testing c++17; need to change .Build.cs file and Project settings NMake
+   
+   PrintLine(TEXT("Bulls: %i, Cows: %i"), Count.Bulls, Count.Cows);
+   //PrintLine(TEXT("c++17 Version; Bulls: %i, Cows: %i"), bull, count);
+   //FString::Printf(TEXT("Bulls: %i, Cows: %i"), BullCount, CowCount);  // Does not work need to access Terminal Class
+
    PrintLine(TEXT("Try again, You have %i lives left"), Lives);
 }
 
 void UBullCowCartridge::GetValidWords()
 {
     const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
-    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);
+    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);  // UE4.22 Version
     auto result=FFileHelper::LoadFileToStringArrayWithPredicate(WordList, *WordListhPath, [this](const auto& word) {return IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4; });
     
     // Error message if the file is not loaded
@@ -111,18 +121,6 @@ void UBullCowCartridge::GetValidWords()
 
 bool UBullCowCartridge::IsIsogram(FStringView Guess) const
 {
-    
-    // Classic for nested for for-if loop
-    
-    //for (int32 Index{0}; Index < Guess.Len(); ++Index)
-    //{
-    //    for (int32 Comparision{Index+1}; Comparision < Guess.Len(); ++Comparision)
-    //    {
-    //        if (Guess[Index] == Guess[Comparision])
-    //            return false;
-    //    }
-    //}
-
     int32 Position{0};
     for(int32 Index=0; Index<Guess.Len(); ++Index) 
     {
@@ -131,5 +129,18 @@ bool UBullCowCartridge::IsIsogram(FStringView Guess) const
     }
 
     return true;
+}
+
+void UBullCowCartridge::GetBullCows(FStringView Guess, FBullCowCount& Count)
+{ 
+    int32 Position{ 0 };
+    for (int32 Index = 0; Index < Guess.Len(); ++Index)
+    {
+        HiddenWord.FindChar(Guess[Index], Position);
+        if (Position == Index)
+            ++Count.Bulls;
+        else if (Position != INDEX_NONE)
+            ++Count.Cows;
+    }
 }
  
