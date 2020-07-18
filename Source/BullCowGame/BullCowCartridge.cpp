@@ -21,7 +21,6 @@ void UBullCowCartridge::OnInput(FStringView Input) // When the player hits enter
     {
         ClearScreen();
         SetupGame();
-     
     }
     else
     {
@@ -80,7 +79,7 @@ void UBullCowCartridge::ProcessGuess(FStringView Input)
 
     PrintLine(TEXT("Lost a life"));
     --Lives;
-
+  
    if (Lives <=0)
    {
        ClearScreen();
@@ -92,7 +91,7 @@ void UBullCowCartridge::ProcessGuess(FStringView Input)
 
    FBullCowCount Count;
    GetBullCows(Input, Count);
-   //auto& [bull, count] = Count;          // testing c++17; need to change .Build.cs file and Project settings NMake
+   //auto& [bull, count] = Count;                                        // testing c++17; need to change .Build.cs file and Project settings NMake
    
    PrintLine(TEXT("Bulls: %i, Cows: %i"), Count.Bulls, Count.Cows);
    //PrintLine(TEXT("c++17 Version; Bulls: %i, Cows: %i"), bull, count);
@@ -104,7 +103,7 @@ void UBullCowCartridge::ProcessGuess(FStringView Input)
 void UBullCowCartridge::GetValidWords()
 {
     const FString WordListhPath = FPaths::ProjectContentDir() / TEXT("WordList/WordList.txt");
-    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);  // UE4.22 Version
+    //FFileHelper::LoadFileToStringArray(WordList, *WordListhPath);     // UE4.22 Version
     auto result=FFileHelper::LoadFileToStringArrayWithPredicate(WordList, *WordListhPath, [this](const auto& word) {return IsIsogram(word) && word.Len() <= 8 && word.Len() >= 4; });
     
     // Error message if the file is not loaded
